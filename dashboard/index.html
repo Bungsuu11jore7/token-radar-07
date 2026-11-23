@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risk-Adjusted Token Radar</title>
+<link rel="stylesheet" href="app.css">
+<script src="../data.js"></script>
+</head>
+<body>
+<header class="pagehead">
+  <h1>Risk-Adjusted Token Radar</h1>
+  <p class="subtitle">Pre-token protocols ranked by fitted launch value — every number from the snapshot, nothing hardcoded.
+  <span id="snapLine" class="snapline"></span></p>
+</header>
+
+<section id="kpiStrip" class="kpi" aria-label="Outcome verdicts"></section>
+
+<section id="ledgerBlock" class="ledger" aria-label="Ledger">
+  <div class="ledger-title">Ledger — all 758 protocols accounted for</div>
+  <div id="ledgerBar" class="ledger-bar"></div>
+  <div id="ledgerSegs" class="ledger-segs"></div>
+  <div id="ledgerPills" class="pills"></div>
+</section>
+
+<section id="evidenceStrip" class="evidence" aria-label="Model evidence"></section>
+
+<div class="layout">
+  <aside class="rail">
+    <section class="rail-box">
+      <h2>Top signals</h2>
+      <ol id="topSignals" class="ladder"></ol>
+    </section>
+    <section class="rail-box" id="pinnedBox" hidden>
+      <h2>Pinned</h2>
+      <ul id="pinnedList" class="pinned"></ul>
+    </section>
+    <section class="rail-box" id="sandbox">
+      <h2>What if</h2>
+      <div id="sbSubject" class="sb-subject"></div>
+      <label>Deposit ($) <input id="sbDep" type="number" min="100" step="100" value="1000"></label>
+      <label>Drop share (×) <select id="sbShare"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+      <label>TVL multiplier (×) <input id="sbTvl" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="sbTvlVal">1.0×</span></label>
+      <div id="sbResult" class="sb-result"></div>
+    </section>
+  </aside>
+
+  <main class="maincol">
+    <div class="tabs" role="tablist">
+      <button id="tabBoard" class="tab active" role="tab">Pre-token board (<span id="boardCount">340</span>)</button>
+      <button id="tabAnchors" class="tab" role="tab">Live anchors (<span id="anchorCount">144</span>)</button>
+      <button id="tabMethod" class="tab" role="tab">Methodology</button>
+    </div>
+
+    <div id="boardPane">
+      <div id="boardFilters" class="filters">
+        <input id="fSearch" type="search" placeholder="Search protocol…" aria-label="Search protocol">
+        <select id="fCategory" aria-label="Category"><option value="">All categories</option></select>
+        <select id="fChain" aria-label="Chain"><option value="">All chains</option></select>
+        <select id="fVerdict" aria-label="Verdict"><option value="">All verdicts</option><option>Farm</option><option>Thin</option><option>Skip</option></select>
+        <label class="chk"><input id="fWatch" type="checkbox"> Watchlist only</label>
+        <span id="bookSummary" class="summary"></span>
+      </div>
+      <div id="compareBar" class="compare-bar" hidden>
+        <button id="compareBtn" class="btn">Compare</button>
+        <button id="compareClear" class="btn ghost">Clear</button>
+        <span id="compareCount"></span>
+      </div>
+      <div id="comparePane" class="compare-pane" hidden></div>
+      <div class="scrollx">
+      <table class="board">
+        <thead><tr id="boardHead"></tr></thead>
+        <tbody id="boardBody"></tbody>
+      </table>
+      </div>
+    </div>
+
+    <div id="anchorPane" hidden>
+      <p class="pane-note">The fit, checked against the 144 protocols whose token already trades — the same OLS line that prices the board.</p>
+      <table class="board">
+        <thead><tr><th>Protocol</th><th>TVL</th><th>Actual mcap</th><th>Fitted implied</th><th>Actual / Fitted</th><th>Error (dex)</th></tr></thead>
+        <tbody id="anchorBody"></tbody>
+      </table>
+    </div>
+
+    <div id="methodPane" hidden>
+      <h2>Methodology</h2>
+      <div id="methodStats" class="statgrid"></div>
+      <h3>Value against TVL</h3>
+      <div id="scatterBox"></div>
+      <h3>Candidate terms — two held-out tests each</h3>
+      <div id="candidateTable"></div>
+      <h3>Token odds — Brier score</h3>
+      <div id="brierTable"></div>
+      <h3>Range honesty — held-out residuals</h3>
+      <div id="rangeTable"></div>
+      <p class="fine">Validation is honest and weak: the fitted line beats a flat TVL multiple on every split, but a typical miss is still ×3.4. Age and 7-day growth were tested on the same splits and rejected — the fitted line uses only what survives. "Records no token" means the snapshot lists no market cap, not that no token exists. 16 traded protocols with market cap ≤ 0 were dropped from the fit. Gas and bridge figures are estimates, Nov 2026.</p>
+    </div>
+
+    <section id="detail" class="detail" hidden>
+      <div class="detail-head">
+        <h2 id="detailName"></h2>
+        <button id="detailClose" class="btn ghost">Close</button>
+      </div>
+      <div class="detail-tabs">
+        <button id="dtabOverview" class="tab active">Overview</button>
+        <button id="dtabFarm" class="tab">Farm plan</button>
+        <button id="dtabModel" class="tab">Model</button>
+      </div>
+      <div id="detailBody"></div>
+    </section>
+  </main>
+</div>
+
+<footer class="integrity">
+  <span id="integrityLine"></span>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
